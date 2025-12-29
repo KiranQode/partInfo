@@ -1,61 +1,69 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Onshape Part Properties</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/main.css" rel="stylesheet">
+    <title>Onshape Mass Calculator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { background-color: #f8f9fa; padding-top: 50px; }
-        .card { border-radius: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        .value-text { font-size: 1.5rem; font-weight: bold; color: #0d6efd; }
+        body { background-color: #f1f3f5; padding-top: 50px; }
+        .search-container { background: white; border-radius: 15px; padding: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); margin-bottom: 30px; }
+        .result-card { border-radius: 15px; border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-md-8">
-                <div class="card p-4">
-                    <h2 class="text-center mb-4">Onshape Physical Properties</h2>
-                    <hr>
-                    
-                    <div class="row text-center">
-                        <div class="col-sm-6 mb-3">
-                            <p class="text-muted mb-0">Total Mass</p>
-                            <div class="value-text">
-                                <span th:text="${#numbers.formatDecimal(properties.actualMass, 1, 4)}">0.0000</span> kg
-                            </div>
-                        </div>
-                        <div class="col-sm-6 mb-3">
-                            <p class="text-muted mb-0">Total Volume</p>
-                            <div class="value-text">
-                                <span th:text="${#numbers.formatDecimal(properties.bodies.get('-all-').volume[0], 1, 6)}">0.0000</span> m³
-                            </div>
-                        </div>
+            <div class="col-md-10">
+                
+                <div class="search-container text-center">
+                    <h2 class="mb-4">Onshape Part Property Finder</h2>
+                    <div class="input-group input-group-lg">
+                        <input type="text" id="urlInput" class="form-control" placeholder="Paste Onshape URL here (https://cad.onshape.com/documents/...)">
+                        <button class="btn btn-primary" onclick="fetchDetails()">Get Properties</button>
                     </div>
+                    <small class="text-muted mt-2 d-block">Example: https://cad.onshape.com/documents/31d2.../w/0f33.../e/7926...</small>
+                </div>
 
-                    <div class="mt-4">
-                        <h5>Calculation Details (Min/Val/Max)</h5>
-                        <table class="table table-sm table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Metric</th>
-                                    <th>Minimum</th>
-                                    <th>Target</th>
-                                    <th>Maximum</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>Mass (kg)</td>
-                                    <td th:text="${properties.bodies.get('-all-').mass[1]}"></td>
-                                    <td th:text="${properties.bodies.get('-all-').mass[0]}"></td>
-                                    <td th:text="${properties.bodies.get('-all-').mass[2]}"></td>
-                                </tr>
-                            </tbody>
-                        </table>
+                <div th:if="${properties != null}" class="card result-card p-4">
+                    <h3 class="text-center text-primary" th:text="'Total Mass: ' + ${#numbers.formatDecimal(properties.actualMass, 1, 4)} + ' kg'"></h3>
+                    <div class="row mt-4 text-center">
+                        <div class="col-md-6 border-end">
+                            <p class="text-muted">Volume</p>
+                            <h5 th:text="${properties.bodies.get('-all-').volume[0]} + ' m³'"></h5>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="text-muted">Element ID</p>
+                            <h5 class="text-truncate" style="max-width: 200px; margin: 0 auto;" th:text="${param.eid}"></h5>
+                        </div>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>
+
+    <script>
+        function fetchDetails() {
+            const url = document.getElementById('urlInput').value;
+            try {
+                // Regex to extract did, wid, and eid from the URL
+                const didMatch = url.match(/\/documents\/([a-z0-9]+)/);
+                const widMatch = url.match(/\/w\/([a-z0-9]+)/);
+                const eidMatch = url.match(/\/e\/([a-z0-9]+)/);
+
+                if (didMatch && widMatch && eidMatch) {
+                    const did = didMatch[1];
+                    const wid = widMatch[1];
+                    const eid = eidMatch[1];
+
+                    // Redirect to the view endpoint with parameters
+                    window.location.href = `/view?did=${did}&wid=${wid}&eid=${eid}`;
+                } else {
+                    alert("Invalid Onshape URL. Please make sure it contains /documents/, /w/, and /e/.");
+                }
+            } catch (e) {
+                alert("Please enter a valid URL.");
+            }
+        }
+    </script>
 </body>
 </html>
