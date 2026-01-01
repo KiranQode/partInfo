@@ -33,7 +33,6 @@ public class OnshapeService {
     }
 
     public PhysicalProperties getPartStudioPhysicalProperties(String d, String w, String e) {
-        // String uri = String.format("/api/parts/d/%s/w/%s/e/%s/massproperties", d, w, e);
         String uri = String.format("/api/partstudios/d/%s/w/%s/e/%s/massproperties", d, w, e);
         
         String authHeader = accessKey + ":" + secretKey;

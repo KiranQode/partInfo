@@ -1,8 +1,9 @@
 package com.example.onshapeapp.partInfo;
 
-import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+import io.github.cdimascio.dotenv.Dotenv;
 
 @SpringBootApplication
 public class PartInfoApplication {
@@ -19,6 +20,7 @@ public class PartInfoApplication {
         dotenv.entries().forEach(entry -> {
             System.setProperty(entry.getKey(), entry.getValue());
         });
+        
 		// 3. Now start Spring
 		SpringApplication.run(PartInfoApplication.class, args);
 	}

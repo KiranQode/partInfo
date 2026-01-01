@@ -17,19 +17,35 @@ public class OnshapeController {
         this.onshapeService = onshapeService;
     }
 
-// 1. Initial empty page
     @GetMapping("/")
-    public String home() {
+    public String getRightPanel(
+            @RequestParam(value = "did", required = false) String did,
+            @RequestParam(value = "wid", required = false) String wid,
+            @RequestParam(value = "eid", required = false) String eid,
+            Model model) {
+        String preFilledUrl = "";
+        if (did != null && !did.isEmpty() && !did.contains("{")) {
+            preFilledUrl = String.format("https://cad.onshape.com/documents/%s/w/%s/e/%s", did, wid, eid);
+            
+            // Auto-load properties if IDs are real
+            try {
+                PhysicalProperties props = onshapeService.getPartStudioPhysicalProperties(did, wid, eid);
+                model.addAttribute("properties", props);
+            } catch (Exception e) {
+                model.addAttribute("error", "Error fetching data: " + e.getMessage());
+            }
+        }
+
+        model.addAttribute("preFilledUrl", preFilledUrl);
         return "part-info";
     }
 
-    // 2. Result page (modified to make properties optional)
+    // Result page (modified to make properties optional)
     @GetMapping("/view")
     public String viewProperties(@RequestParam String did, 
                                  @RequestParam String wid, 
                                  @RequestParam String eid, 
                                  Model model) {
-        
         PhysicalProperties props = onshapeService.getPartStudioPhysicalProperties(did, wid, eid);
         model.addAttribute("properties", props);
         return "part-info";

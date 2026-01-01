@@ -10,6 +10,7 @@
     </style>
 </head>
 <body>
+    
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-10">
@@ -17,7 +18,7 @@
                 <div class="search-container text-center">
                     <h2 class="mb-4">Onshape Part Property Finder</h2>
                     <div class="input-group input-group-lg">
-                        <input type="text" id="urlInput" class="form-control" placeholder="Paste Onshape URL here (https://cad.onshape.com/documents/...)">
+                        <input type="text" id="urlInput" class="form-control" th:value="${preFilledUrl}" placeholder="Paste Onshape URL here (https://cad.onshape.com/documents/...)">
                         <button class="btn btn-primary" onclick="fetchDetails()">Get Properties</button>
                     </div>
                     <small class="text-muted mt-2 d-block">Example: https://cad.onshape.com/documents/31d2.../w/0f33.../e/7926...</small>
